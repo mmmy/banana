@@ -1,0 +1,23 @@
+{
+  "name": "banana",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmmy/banana.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmmy/banana/issues"
+  },
+  "homepage": "https://github.com/mmmy/banana#readme",
+  "dependencies": {
+    "wechaty": "^0.28.3"
+  }
+}
