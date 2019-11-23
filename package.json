@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mmmy/banana#readme",
   "dependencies": {
+    "puppeteer": "^2.0.0",
     "wechaty": "^0.28.3"
   }
 }
