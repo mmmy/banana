@@ -6,6 +6,7 @@ class BManager {
   constructor(options) {
     this._init()
   }
+
   async _init() {
     await this._initBrowser()
     await this._initFTPage()
@@ -35,8 +36,6 @@ class BManager {
 
     this.ftGoGo({ indexes: [2, 3, 4, 6] })
   }
-
-  async ftIsReady() {}
 
   async ftGoGo(data) {
     // {indexes: [], numbers: []}
