@@ -23,7 +23,42 @@ async function tapSelector(page, selector) {
     return doms
   })
 }
+
+async function touchStartSelector(page, selector) {
+  return await page.$$eval(selector, doms => {
+    function triggerTap(el) {
+      // 创建自定义事件
+      const event = document.createEvent("Events")
+      // 初始化事件，可冒泡，可取消
+      event.initEvent("touchstart", true, true)
+      // 分发事件
+      el.dispatchEvent(event)
+    }
+    if (doms.length > 0) {
+      triggerTap(doms[0])
+    }
+    return doms
+  })
+}
+
+async function touchEndSelector(page, selector) {
+  return await page.$$eval(selector, doms => {
+    function triggerTap(el) {
+      // 创建自定义事件
+      const event = document.createEvent("Events")
+      // 初始化事件，可冒泡，可取消
+      event.initEvent("touchend", false, true)
+      // 分发事件
+      el.dispatchEvent(event)
+    }
+    if (doms.length > 0) {
+      triggerTap(doms[0])
+    }
+    return doms
+  })
+}
 // type: touchstart touchend
+/*
 async function touchEndSelector(page, selector) {
   return await page.$$eval(selector, doms => {
     function triggerTouchEvent(el, eventType) {
@@ -58,7 +93,7 @@ async function touchEndSelector(page, selector) {
     return doms
   })
 }
-
+*/
 function triggerTouchEvent(el, eventType) {
   // 获取目标元素的坐标、大小
   const rect = el.getBoundingClientRect()
@@ -88,6 +123,6 @@ function triggerTouchEvent(el, eventType) {
 module.exports = {
   tapSelector,
   touchEndSelector,
-  triggerTap,
-  triggerTouchEvent
+  touchStartSelector,
+  triggerTap
 }

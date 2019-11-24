@@ -31,7 +31,8 @@ class BManager {
     const page0 = page[0]
     await page0.emulate(iPhone)
     await page0.goto(
-      "https://98100a.com/m/#/",
+      "https://98100a.com/m/#/Login",
+      // "https://98100a.com/m/#/",
       // "https://98100a.com/m/#/bjpk10?id=5519&code=mamlaft&name=摩纳哥飞艇&title=摩纳哥飞艇&Value=0.07753564755402653",
       {
         timeout: 0
@@ -120,14 +121,20 @@ class BManager {
           `#pluginKeyborad .table-number tr:nth-child(${trChildIndex}) td:nth-child(${tdChildIndex})`
         )
       }
+      console.log("touch number", num)
     })
     // click bet button
     await this._ftPage.waitFor(5000)
+    // await ActionTools.touchStartSelector(this._ftPage, "#betbtn")
+    // await this._ftPage.waitFor(100)
+
     await ActionTools.touchEndSelector(this._ftPage, "#betbtn")
+    await this._ftPage.waitFor(500)
+
     // check validate
-    const totalInDialog = +this._ftPage.$$eval(".BET_AMT", doms => {
-      return doms.innerText
-    })[0]
+    const totalInDialog = +(await this._ftPage.$$eval(".BET_AMT", doms => {
+      return doms[0].innerText
+    })[0])
     const total = data.indexes.length * data.numbers.length * data.bet
     console.log("tttttt", totalInDialog, total)
     await this._ftPage.waitFor(5000)
@@ -140,6 +147,10 @@ class BManager {
       )
       console.log("done")
     } else {
+      // await ActionTools.touchEndSelector(
+      //   this._ftPage,
+      //   "#actionsheet .sure .btn-sure"
+      // )
       await ActionTools.touchEndSelector(this._ftPage, "#keyborad-mask")
       console.log("不吻合，退出")
     }
