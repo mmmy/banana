@@ -50,7 +50,8 @@ class BManager {
     // }
     this._ftPage = page0
 
-    await this.ftGoGo({ indexes: [2, 3, 4, 5, 6, 7, 8], numbers: [3], bet: 2 })
+    this._ready = true
+    // await this.ftGoGo({ indexes: [2, 3, 4, 5, 6, 7, 8], numbers: [3], bet: 1 })
   }
 
   async ftGoGo(data) {
@@ -116,6 +117,7 @@ class BManager {
       } else {
         const trChildIndex = Math.floor((num - 1) / 3) + 1
         let tdChildIndex = ((num - 1) % 3) + 1
+        console.log("trChildIndex", trChildIndex, "tdChildIndex", tdChildIndex)
         await ActionTools.touchEndSelector(
           this._ftPage,
           `#pluginKeyborad .table-number tr:nth-child(${trChildIndex}) td:nth-child(${tdChildIndex})`
@@ -124,24 +126,25 @@ class BManager {
       console.log("touch number", num)
     })
     // click bet button
-    await this._ftPage.waitFor(5000)
+    await this._ftPage.waitFor(100)
     // await ActionTools.touchStartSelector(this._ftPage, "#betbtn")
     // await this._ftPage.waitFor(100)
 
-    await ActionTools.touchEndSelector(this._ftPage, "#betbtn")
-    await this._ftPage.waitFor(500)
+    await ActionTools.touchEndSelector(this._ftPage, ".top_betBox #betbtn")
+    await this._ftPage.waitFor(100)
 
     // check validate
     const totalInDialog = +(await this._ftPage.$$eval(".BET_AMT", doms => {
+      console.log(doms)
       return doms[0].innerText
-    })[0])
+    }))
     const total = data.indexes.length * data.numbers.length * data.bet
     console.log("tttttt", totalInDialog, total)
-    await this._ftPage.waitFor(5000)
+    await this._ftPage.waitFor(1000)
 
     // confirm
-    if (totalInDialog === total && false) {
-      await ActionTools.touchEndSelector(
+    if (totalInDialog === total) {
+      await ActionTools.tapSelector(
         this._ftPage,
         "#actionsheet .sure .btn-sure"
       )
@@ -153,6 +156,26 @@ class BManager {
       // )
       await ActionTools.touchEndSelector(this._ftPage, "#keyborad-mask")
       console.log("不吻合，退出")
+    }
+  }
+
+  async getCurrentFtZhudan() {
+    const text = await this._ftPage.$$eval(".zhudan .userWin", doms => {
+      return doms[0].innerText
+    })
+    return +text.replace("¥", "")
+  }
+
+  async hasFtZhudan() {
+    const amount = await this.getCurrentFtZhudan()
+    console.log("hasFtZhudan", amount)
+    return amount > 0
+  }
+
+  async closeAlertIfHave() {
+    const hasDialogAlert = await this._ftPage.$("mui-popup-backdrop.mui-active")
+    if (hasDialogAlert) {
+      await ActionTools.tapSelector(".mui-popup-button")
     }
   }
 }
