@@ -173,7 +173,12 @@ class BManager {
     return amount > 0
   }
   // 获取当前期号
-  async getFtIssue() {}
+  async getFtIssue() {
+    return await this._ftPage.$eval(
+      ".timeClose-container .colorInherit",
+      n => n.innerText
+    )
+  }
 
   async closeAlertIfHave() {
     const hasDialogAlert = await this._ftPage.$("mui-popup-backdrop.mui-active")
@@ -181,18 +186,33 @@ class BManager {
       await ActionTools.tapSelector(".mui-popup-button")
     }
   }
-  // { issue: 05, indexes: [2, 3, 4, 5, 6, 7, 8], numbers: [3], bet: 1 }
+  // { issue: '05', indexes: [2, 3, 4, 5, 6, 7, 8], numbers: [3], bet: 1 }
   async doFt(data) {
     if (!this._ready) {
       return false
     }
+    // todo: 判断期号
+    let currentIssue = await this.getFtIssue()
+    if (currentIssue) {
+      currentIssue = currentIssue.trim()
+    }
+    console.log(currentIssue, 7777777)
+    if (!currentIssue) {
+      console.log("获取期号失败")
+      return false
+    }
+
+    if (currentIssue.slice(-2) !== data.issue) {
+      console.log("期号不吻合")
+      return false
+    }
+
     await this.closeAlertIfHave()
     // todo: 判断是否封盘
 
     const hasXd = await this.hasFtZhudan()
     if (!hasXd) {
       console.log("start bet", data)
-      // todo: 判断期号
       return await this.ftGoGo(data)
     }
     console.log("hasXd, 不重复")
