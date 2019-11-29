@@ -20,4 +20,4 @@ setInterval(async () => {
     bet: 1
   }
   await bm.doFt(data)
-}, 20 * 1000)
+}, 4 * 1000)

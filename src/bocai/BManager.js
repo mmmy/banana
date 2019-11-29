@@ -111,7 +111,7 @@ class BManager {
       }
     })
 
-    await this._ftPage.waitFor(1000)
+    await this._ftPage.waitFor(10)
 
     return await this.ftBet(data)
 
@@ -155,12 +155,12 @@ class BManager {
       console.log("touch number", num)
     })
     // click bet button
-    await this._ftPage.waitFor(100)
+    await this._ftPage.waitFor(10)
     // await ActionTools.touchStartSelector(this._ftPage, "#betbtn")
     // await this._ftPage.waitFor(100)
 
     await ActionTools.touchEndSelector(this._ftPage, ".top_betBox #betbtn")
-    await this._ftPage.waitFor(100)
+    await this._ftPage.waitFor(10)
 
     // check validate
     const totalInDialog = +(await this._ftPage.$$eval(".BET_AMT", doms => {
@@ -169,7 +169,7 @@ class BManager {
     }))
     const total = data.indexes.length * data.numbers.length * bet
     // console.log("tttttt", totalInDialog, total)
-    await this._ftPage.waitFor(1000)
+    await this._ftPage.waitFor(10)
 
     // confirm
     if (totalInDialog === total) {
@@ -285,7 +285,7 @@ class BManager {
 
         clearInterval(this._ftCheckResultInterval)
       }
-    }, 5000)
+    }, 3000)
   }
 
   async getCurrentFtCloseIssueAndResult() {
