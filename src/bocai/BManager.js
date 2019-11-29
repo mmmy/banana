@@ -203,7 +203,12 @@ class BManager {
     }
 
     if (currentIssue.slice(-2) !== data.issue) {
-      console.log("期号不吻合")
+      console.log(
+        "期号不吻合,最新",
+        currentIssue.slice(-2),
+        "income",
+        data.issue
+      )
       return false
     }
 
