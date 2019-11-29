@@ -30,8 +30,8 @@ function parseLastFtMessage(message = "", reg) {
       return {
         msg: result[0],
         issue: result[1], // 期数
-        numbers: parseStringToNumbers(result[2]), // 1个数字
-        indexes: parseStringToNumbers(result[3]) // 5,6,7个数字
+        indexes: parseStringToNumbers(result[2]),
+        numbers: parseStringToNumbers(result[3])
       }
     }
   }

@@ -3,10 +3,36 @@ const devices = puppeteer.devices
 const iPhone = devices["iPhone 6"]
 const ActionTools = require("./utils/ActionTools")
 
+function checkFtIsWin(data, resultNumbers) {
+  const { indexes, numbers } = data
+  for (let i = 0; i < indexes.length; i++) {
+    const index = indexes[i]
+    // 索引下结果
+    const result = resultNumbers[index - 1]
+    if (numbers.indexOf(result) > -1) {
+      return true
+    }
+  }
+  return false
+}
+
 class BManager {
-  constructor() {
+  constructor(options) {
+    this._options = {
+      checkIssue: true,
+      lossDouble: false,
+      ...options
+    }
     this._init()
     this._login = true
+    this._ftBetTimes = 1 //倍数
+    this._lastFtBetInfo = {
+      data: null,
+      validated: false,
+      isWin: true,
+      issue: ""
+    }
+    this._ftCheckResultInterval = null
   }
 
   async _init() {
@@ -106,7 +132,10 @@ class BManager {
       this._ftPage,
       ".footer .import .betValue"
     )
-    const numbers = (data.bet + "").split("").map(n => +n)
+
+    const bet = data.bet * this._ftBetTimes
+
+    const numbers = (bet + "").split("").map(n => +n)
     console.log("input numbers", numbers)
     numbers.forEach(async num => {
       if (num === 0) {
@@ -138,8 +167,8 @@ class BManager {
       console.log(doms)
       return doms[0].innerText
     }))
-    const total = data.indexes.length * data.numbers.length * data.bet
-    console.log("tttttt", totalInDialog, total)
+    const total = data.indexes.length * data.numbers.length * bet
+    // console.log("tttttt", totalInDialog, total)
     await this._ftPage.waitFor(1000)
 
     // confirm
@@ -169,7 +198,7 @@ class BManager {
 
   async hasFtZhudan() {
     const amount = await this.getCurrentFtZhudan()
-    console.log("hasFtZhudan", amount)
+    // console.log("hasFtZhudan", amount)
     return amount > 0
   }
   // 获取当前期号
@@ -191,25 +220,25 @@ class BManager {
     if (!this._ready) {
       return false
     }
-    // todo: 判断期号
-    let currentIssue = await this.getFtIssue()
-    if (currentIssue) {
-      currentIssue = currentIssue.trim()
-    }
-    console.log(currentIssue, 7777777)
-    if (!currentIssue) {
-      console.log("获取期号失败")
-      return false
-    }
-
-    if (currentIssue.slice(-2) !== data.issue) {
-      console.log(
-        "期号不吻合,最新",
-        currentIssue.slice(-2),
-        "income",
-        data.issue
-      )
-      return false
+    // 判断期号
+    if (this._options.checkIssue) {
+      let currentIssue = await this.getFtIssue()
+      if (currentIssue) {
+        currentIssue = currentIssue.trim()
+      }
+      if (!currentIssue) {
+        console.log("获取期号失败")
+        return false
+      }
+      if (currentIssue.slice(-2) !== data.issue) {
+        console.log(
+          "期号不吻合,最新",
+          currentIssue.slice(-2),
+          "income",
+          data.issue
+        )
+        return false
+      }
     }
 
     await this.closeAlertIfHave()
@@ -218,10 +247,71 @@ class BManager {
     const hasXd = await this.hasFtZhudan()
     if (!hasXd) {
       console.log("start bet", data)
-      return await this.ftGoGo(data)
+      const result = await this.ftGoGo(data)
+      if (result) {
+        this._lastFtBetInfo.data = data
+        this._lastFtBetInfo.validated = false
+        this._lastFtBetInfo.isWin = true
+        this._lastFtBetInfo.issue = await this.getCurrentFtIssue()
+        this.initCheckFtResultInterval()
+      }
+      return result
     }
-    console.log("hasXd, 不重复")
+    // console.log("hasXd, 已下单，不支持重复下")
     return false
+  }
+
+  initCheckFtResultInterval() {
+    clearInterval(this._ftCheckResultInterval)
+
+    this._ftCheckResultInterval = setInterval(async () => {
+      const currentOpen = await this.getCurrentFtCloseIssueAndResult()
+      // console.log(currentOpen.issue, currentOpen.numbers, 'cccccccccc')
+      const { data, issue, validated } = this._lastFtBetInfo
+      if (currentOpen.issue && currentOpen.issue === issue && !validated) {
+        // check is win or not
+        if (checkFtIsWin(data, currentOpen.numbers)) {
+          console.log("last is win !!!!!!!!!!!")
+          this._ftBetTimes = 1
+          this._lastFtBetInfo.isWin = true
+        } else {
+          console.log("last is lost #############")
+          this._lastFtBetInfo.isWin = false
+          if (this._options.lossDouble) {
+            this._ftBetTimes += 1
+          }
+        }
+        this._lastFtBetInfo.validated = true
+
+        clearInterval(this._ftCheckResultInterval)
+      }
+    }, 5000)
+  }
+
+  async getCurrentFtCloseIssueAndResult() {
+    let issue = await this._ftPage.$eval(
+      ".header-top .colorInherit",
+      n => n.innerText
+    )
+    issue = issue.trim()
+    const numbers = await this._ftPage.$$eval(
+      ".header-top .inlineBlockItem .item",
+      doms => {
+        return doms.map(d => +d.innerText)
+      }
+    )
+    return {
+      issue,
+      numbers
+    }
+  }
+
+  async getCurrentFtIssue() {
+    let issue = await this._ftPage.$eval(
+      ".header-bottom .colorInherit",
+      n => n.innerText
+    )
+    return issue.trim()
   }
 }
 
