@@ -85,9 +85,9 @@ class BManager {
       }
     })
 
-    await this._ftPage.waitFor(3000)
+    await this._ftPage.waitFor(1000)
 
-    await this.ftBet(data)
+    return await this.ftBet(data)
 
     // bet
     // for test
@@ -149,6 +149,7 @@ class BManager {
         "#actionsheet .sure .btn-sure"
       )
       console.log("done")
+      return true
     } else {
       // await ActionTools.touchEndSelector(
       //   this._ftPage,
@@ -171,12 +172,31 @@ class BManager {
     console.log("hasFtZhudan", amount)
     return amount > 0
   }
+  // 获取当前期号
+  async getFtIssue() {}
 
   async closeAlertIfHave() {
     const hasDialogAlert = await this._ftPage.$("mui-popup-backdrop.mui-active")
     if (hasDialogAlert) {
       await ActionTools.tapSelector(".mui-popup-button")
     }
+  }
+  // { issue: 05, indexes: [2, 3, 4, 5, 6, 7, 8], numbers: [3], bet: 1 }
+  async doFt(data) {
+    if (!this._ready) {
+      return false
+    }
+    await this.closeAlertIfHave()
+    // todo: 判断是否封盘
+
+    const hasXd = await this.hasFtZhudan()
+    if (!hasXd) {
+      console.log("start bet", data)
+      // todo: 判断期号
+      return await this.ftGoGo(data)
+    }
+    console.log("hasXd, 不重复")
+    return false
   }
 }
 
