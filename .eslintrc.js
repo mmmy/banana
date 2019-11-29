@@ -1,6 +1,6 @@
 module.exports = {
   parserOptions: {
-    ecmaVersion: 2017,
+    ecmaVersion: 2018,
     sourceType: "module"
   },
   // parser: "@typescript-eslint/parser", //定义ESLint的解析器
