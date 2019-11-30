@@ -281,7 +281,12 @@ class BManager {
           if (this._options.lossDouble) {
             this._ftBetTimes += 1
             this._ftMaxTimes = Math.max(this._ftBetTimes, this._ftMaxTimes)
-            console.log("max times ...", this._ftMaxTimes)
+            console.log(
+              "max times ...",
+              this._ftMaxTimes,
+              "current times",
+              this._ftBetTimes
+            )
           }
         }
         this._lastFtBetInfo.validated = true
