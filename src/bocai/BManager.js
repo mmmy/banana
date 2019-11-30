@@ -22,6 +22,7 @@ class BManager {
       checkIssue: true,
       lossDouble: false,
       doubleRate: 2,
+      stopAtAmount: 0,
       ...options
     }
     this._init()
@@ -135,10 +136,14 @@ class BManager {
       ".footer .import .betValue"
     )
 
-    const bet = data.bet * this._ftBetTimes * (this._options.doubleRate - 1)
+    const bet = Math.round(
+      data.bet *
+        this._ftBetTimes *
+        (this._ftBetTimes > 1 ? this._options.doubleRate - 1 : 1)
+    )
 
     if (bet > 100) {
-      console.log("bet 过大 > 100")
+      console.log("bet 过大 > 150")
       return false
     }
 
@@ -226,6 +231,14 @@ class BManager {
   async doFt(data) {
     if (!this._ready) {
       return false
+    }
+
+    if (this._options.stopAtAmount > 0) {
+      const currentAmount = await this.getCurrentAmount()
+      if (currentAmount >= this._options.stopAtAmount) {
+        console.log("达成目标 and stop")
+        return false
+      }
     }
     // 判断期号
     if (this._options.checkIssue) {
@@ -326,6 +339,14 @@ class BManager {
       n => n.innerText
     )
     return issue.trim()
+  }
+
+  async getCurrentAmount() {
+    let money = await this._ftPage.$eval(
+      ".UserMoney .userWin",
+      n => n.innerText
+    )
+    return +money
   }
 }
 

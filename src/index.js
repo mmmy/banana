@@ -4,7 +4,8 @@ const XLManager = require("./xianliao/XLManager")
 const bm = new BManager({
   checkIssue: true,
   lossDouble: true,
-  doubleRate: 2.5 // 5m: 2, 6码：2.5， 7码：3.33
+  doubleRate: 2.5, // 5m: 2, 6码：2.5， 7码：3.33
+  stopAtAmount: 1500 // 1500停止
 })
 const xl = new XLManager()
 

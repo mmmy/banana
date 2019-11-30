@@ -4,7 +4,8 @@ const BManager = require("./bocai/BManager")
 const bm = new BManager({
   checkIssue: false,
   lossDouble: true,
-  doubleRate: 2 // 5m: 2, 6码：2.5， 7码：3.33
+  doubleRate: 2, // 5m: 2, 6码：2.5， 7码：3.33
+  stopAtAmount: 900
 })
 // const xl = new XLManager()
 
@@ -15,10 +16,11 @@ const bm = new BManager({
 // }
 
 setInterval(async () => {
+  const rn = Math.ceil(Math.random() * 10)
   const data = {
-    indexes: [9],
+    indexes: [rn],
     numbers: [6, 7, 8, 9, 10],
     bet: 2
   }
   await bm.doFt(data)
-}, 4 * 1000)
+}, 20 * 1000)
