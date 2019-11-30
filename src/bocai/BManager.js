@@ -21,6 +21,7 @@ class BManager {
     this._options = {
       checkIssue: true,
       lossDouble: false,
+      doubleRate: 2,
       ...options
     }
     this._init()
@@ -134,7 +135,12 @@ class BManager {
       ".footer .import .betValue"
     )
 
-    const bet = data.bet * this._ftBetTimes
+    const bet = data.bet * this._ftBetTimes * (this._options.doubleRate - 1)
+
+    if (bet > 100) {
+      console.log("bet 过大 > 100")
+      return false
+    }
 
     const numbers = (bet + "").split("").map(n => +n)
     // console.log("input numbers", numbers)
