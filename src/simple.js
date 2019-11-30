@@ -15,7 +15,7 @@ const bm = new BManager({
 
 setInterval(async () => {
   const data = {
-    indexes: [7],
+    indexes: [9],
     numbers: [5, 6, 7, 8, 9],
     bet: 1
   }

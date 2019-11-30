@@ -26,6 +26,7 @@ class BManager {
     this._init()
     this._login = true
     this._ftBetTimes = 1 //倍数
+    this._ftMaxTimes = 1
     this._lastFtBetInfo = {
       data: null,
       validated: false,
@@ -97,7 +98,7 @@ class BManager {
       } catch (e) {
         console.log(e)
       }
-      console.log("点击", index)
+      // console.log("点击", index)
     })
 
     data.numbers.forEach(async number => {
@@ -164,7 +165,7 @@ class BManager {
 
     // check validate
     const totalInDialog = +(await this._ftPage.$$eval(".BET_AMT", doms => {
-      console.log(doms)
+      // console.log(doms)
       return doms[0].innerText
     }))
     const total = data.indexes.length * data.numbers.length * bet
@@ -279,6 +280,8 @@ class BManager {
           this._lastFtBetInfo.isWin = false
           if (this._options.lossDouble) {
             this._ftBetTimes += 1
+            this._ftMaxTimes = Math.max(this._ftBetTimes, this._ftMaxTimes)
+            console.log("max times ...", this._ftMaxTimes)
           }
         }
         this._lastFtBetInfo.validated = true
