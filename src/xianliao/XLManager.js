@@ -1,6 +1,18 @@
 const puppeteer = require("puppeteer")
-// '1234567890' => [1,2,3,4,5,6,7,8,9,10]
+// '1234567890' or '4-2' => [1,2,3,4,5,6,7,8,9,10]
 function parseStringToNumbers(string = "") {
+  if (string.length === 3 && string.indexOf("-") > -1) {
+    const nums = []
+    const start = +string[0]
+    const end = +string[2]
+    if (end === 0) {
+      end = 10
+    }
+    for (let i = start; i <= end; i++) {
+      nums.push(i)
+    }
+    return nums
+  }
   return string.split("").map(s => {
     const n = +s
     if (n === 0) {
@@ -21,9 +33,10 @@ function parseLastFtMessage(message = "", reg) {
       result = reg.exec(msg)
     } else {
       // 使用默认测试
-      const reg1 = /(\d+)期(\d+)名(\d+)各/
-      const reg2 = /(\d+)期(\d+)名买(\d+)各/
-      result = reg1.exec(msg) || reg2.exec(msg)
+      const reg1 = /(\d+)期(\d+)名(\d+)各/ // 一般5m
+      const reg2 = /(\d+)期(\d+)名买(\d+)各/ // 一般5m
+      const reg3 = /(\d+)期(\d\-\d)[买|名](\d+)[各|个]/
+      result = reg1.exec(msg) || reg2.exec(msg) || reg3.exec(msg)
     }
 
     if (result) {

@@ -1,13 +1,16 @@
 const BManager = require("./bocai/BManager")
 const XLManager = require("./xianliao/XLManager")
 
-const bm = new BManager()
+const bm = new BManager({
+  checkIssue: true,
+  lossDouble: true
+})
 const xl = new XLManager()
 
 const OPTIONS = {
   chartName: "一起吃小火锅",
   name: "娜娜",
-  bet: 1
+  bet: 2
 }
 
 setInterval(async () => {

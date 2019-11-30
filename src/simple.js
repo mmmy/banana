@@ -3,7 +3,8 @@ const BManager = require("./bocai/BManager")
 
 const bm = new BManager({
   checkIssue: false,
-  lossDouble: true
+  lossDouble: true,
+  doubleRate: 2 // 5m: 2, 6码：2.5， 7码：3.33
 })
 // const xl = new XLManager()
 
@@ -16,8 +17,8 @@ const bm = new BManager({
 setInterval(async () => {
   const data = {
     indexes: [9],
-    numbers: [5, 6, 7, 8, 9],
-    bet: 1
+    numbers: [6, 7, 8, 9, 10],
+    bet: 2
   }
   await bm.doFt(data)
 }, 4 * 1000)
