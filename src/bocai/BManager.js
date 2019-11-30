@@ -137,7 +137,7 @@ class BManager {
     const bet = data.bet * this._ftBetTimes
 
     const numbers = (bet + "").split("").map(n => +n)
-    console.log("input numbers", numbers)
+    // console.log("input numbers", numbers)
     numbers.forEach(async num => {
       if (num === 0) {
         await ActionTools.touchEndSelector(
@@ -147,13 +147,13 @@ class BManager {
       } else {
         const trChildIndex = Math.floor((num - 1) / 3) + 1
         let tdChildIndex = ((num - 1) % 3) + 1
-        console.log("trChildIndex", trChildIndex, "tdChildIndex", tdChildIndex)
+        // console.log("trChildIndex", trChildIndex, "tdChildIndex", tdChildIndex)
         await ActionTools.touchEndSelector(
           this._ftPage,
           `#pluginKeyborad .table-number tr:nth-child(${trChildIndex}) td:nth-child(${tdChildIndex})`
         )
       }
-      console.log("touch number", num)
+      // console.log("touch number", num)
     })
     // click bet button
     await this._ftPage.waitFor(10)
